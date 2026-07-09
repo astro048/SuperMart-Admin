@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useData } from "../context/DataContext";
 import { deleteProduct } from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/products.css";
+import "../styles/Products.css";
 import "../styles/index.css";
 
 // Edit Modal Component

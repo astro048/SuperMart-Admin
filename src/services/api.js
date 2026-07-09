@@ -1,7 +1,7 @@
 // Base URL of your Express + MongoDB backend.
 // Vite: set VITE_API_URL in .env. Create React App: set REACT_APP_API_URL instead
 // and swap the line below to `process.env.REACT_APP_API_URL`.
-const API_BASE ='https://supermart-api-2.onrender.com/api'; 
+const API_BASE = 'https://supermart-api-2.onrender.com/api' 
 
 async function handleResponse(res) {
   const data = await res.json().catch(() => ({}))

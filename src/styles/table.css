@@ -1,9 +1,9 @@
 .page-header {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .page-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -11,35 +11,99 @@
 .page-subtitle {
   color: var(--text-secondary);
   margin-top: 4px;
+  font-size: 13px;
 }
 
 .table-toolbar {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+  margin-bottom: 16px;
 }
 
 .search-box {
   flex: 1;
-  min-width: 250px;
+  min-width: 100%;
 }
 
 .filter-and-actions {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 12px;
+  width: 100%;
+}
+
+.bulk-action-group {
+  display: flex;
+  gap: 8px;
 }
 
 .selected-count {
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background-color: #f1f5f9;
   color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.toolbar-btn {
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.toolbar-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
 
 .table-responsive {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+  background-color: var(--text-light);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.table th {
+  background-color: var(--light-color);
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.table tbody tr.selected {
+  background-color: #e9ecef;
 }
 
 .user-cell {
@@ -58,6 +122,7 @@
   color: white;
   font-weight: 600;
   font-size: 14px;
+  flex-shrink: 0;
 }
 
 /* Action buttons in tables */
@@ -66,9 +131,14 @@
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 6px;
+  padding: 8px;
   border-radius: 4px;
   transition: all 0.2s ease;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action-btn:hover {
@@ -87,19 +157,21 @@
 /* Status filter tabs */
 .status-tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
 }
 
 .status-tab {
-  padding: 8px 16px;
+  padding: 8px 12px;
   border: none;
   background-color: var(--light-color);
   color: var(--text-secondary);
   cursor: pointer;
   border-radius: var(--radius);
-  font-size: 14px;
+  font-size: 12px;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .status-tab:hover {
@@ -111,6 +183,80 @@
   color: var(--text-light);
 }
 
-.count-badge{
-  margin-left: 6px;
+.count-badge {
+  margin-left: 4px;
+}
+
+/* Tablet - 768px and up */
+@media (min-width: 768px) {
+  .page-title {
+    font-size: 24px;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+  }
+
+  .table-toolbar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 250px;
+  }
+
+  .filter-and-actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .bulk-action-group {
+    gap: 8px;
+  }
+
+  .table th,
+  .table td {
+    padding: 14px 16px;
+  }
+
+  .table {
+    min-width: 800px;
+  }
+
+  .action-btn {
+    padding: 6px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+}
+
+/* Desktop - 1024px and up */
+@media (min-width: 1024px) {
+  .table-toolbar {
+    gap: 16px;
+  }
+
+  .filter-and-actions {
+    gap: 12px;
+  }
+
+  .search-box {
+    min-width: 300px;
+  }
+
+  .table th,
+  .table td {
+    padding: 16px;
+  }
+
+  .table {
+    min-width: 1000px;
+  }
 }

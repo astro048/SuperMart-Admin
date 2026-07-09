@@ -91,24 +91,26 @@ const Users = () => {
               <option value="Pending">Pending</option>
             </select>
             <span className="selected-count">{selectedUsers.length} selected</span>
-            <button 
-              className="btn btn-success btn-sm"
-              onClick={() => handleBulkAction('activate')}
-            >
-              Activate
-            </button>
-            <button 
-              className="btn btn-warning btn-sm"
-              onClick={() => handleBulkAction('block')}
-            >
-              Block
-            </button>
-            <button 
-              className="btn btn-danger btn-sm"
-              onClick={() => handleBulkAction('delete')}
-            >
-              Delete
-            </button>
+            <div className="bulk-action-group">
+              <button 
+                className="btn btn-success btn-sm toolbar-btn"
+                onClick={() => handleBulkAction('activate')}
+              >
+                Activate
+              </button>
+              <button 
+                className="btn btn-warning btn-sm toolbar-btn"
+                onClick={() => handleBulkAction('block')}
+              >
+                Block
+              </button>
+              <button 
+                className="btn btn-danger btn-sm toolbar-btn"
+                onClick={() => handleBulkAction('delete')}
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
 

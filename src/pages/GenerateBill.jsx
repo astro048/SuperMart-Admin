@@ -28,7 +28,7 @@ const GenerateBill = () => {
     customerPhone: "",
     items: [],
     subtotal: 0,
-    vatPercentage: 18,
+    vatPercentage: 4,
     vatAmount: 0,
     total: 0,
     cash: 0,

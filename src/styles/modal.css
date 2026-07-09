@@ -1,15 +1,13 @@
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 16px;
 }
 
 .modal {
@@ -19,23 +17,36 @@
   overflow: hidden;
   max-height: 90vh;
   overflow-y: auto;
+  width: 100%;
+  max-width: 400px;
 }
 
-.modal-sm { width: 400px; max-width: 90vw; }
-.modal-md { width: 600px; max-width: 90vw; }
-.modal-lg { width: 800px; max-width: 90vw; }
-.modal-xl { width: 1000px; max-width: 90vw; }
+.modal-sm {
+  max-width: 320px;
+}
+
+.modal-md {
+  max-width: 500px;
+}
+
+.modal-lg {
+  max-width: 700px;
+}
+
+.modal-xl {
+  max-width: 900px;
+}
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border-color);
 }
 
 .modal-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -43,7 +54,7 @@
 .modal-close {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 22px;
   cursor: pointer;
   color: var(--text-secondary);
   padding: 4px 8px;
@@ -57,5 +68,39 @@
 }
 
 .modal-body {
-  padding: 24px;
+  padding: 20px;
+}
+
+/* Tablet - 768px and up */
+@media (min-width: 768px) {
+  .modal-overlay {
+    padding: 24px;
+  }
+
+  .modal {
+    max-width: 500px;
+  }
+
+  .modal-header {
+    padding: 20px 24px;
+  }
+
+  .modal-title {
+    font-size: 18px;
+  }
+
+  .modal-close {
+    font-size: 24px;
+  }
+
+  .modal-body {
+    padding: 24px;
+  }
+}
+
+/* Desktop - 1024px and up */
+@media (min-width: 1024px) {
+  .modal {
+    max-width: 600px;
+  }
 }

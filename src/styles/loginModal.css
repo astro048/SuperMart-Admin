@@ -6,13 +6,15 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 16px;
 }
 
 .modal-box {
   background: #fff;
   border-radius: 12px;
-  padding: 32px;
-  width: 340px;
+  padding: 24px;
+  width: 100%;
+  max-width: 340px;
   position: relative;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
@@ -26,20 +28,22 @@
   font-size: 22px;
   cursor: pointer;
   color: #666;
+  padding: 4px;
 }
 
 .modal-box h2 {
-  margin-bottom: 20px;
-  font-size: 18px;
+  margin-bottom: 16px;
+  font-size: 16px;
+  text-align: center;
 }
 
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .form-group label {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   margin-bottom: 6px;
   color: #333;
@@ -60,13 +64,14 @@
 
 .modal-error {
   color: #dc2626;
-  font-size: 13px;
+  font-size: 12px;
   margin-bottom: 12px;
+  text-align: center;
 }
 
 .modal-submit {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background: #2563eb;
   color: #fff;
   border: none;
@@ -74,6 +79,7 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  margin-top: 8px;
 }
 
 .modal-submit:disabled {
@@ -87,7 +93,7 @@
 
 .modal-switch {
   margin-top: 16px;
-  font-size: 13px;
+  font-size: 12px;
   text-align: center;
   color: #555;
 }
@@ -99,9 +105,58 @@
   font-weight: 600;
   cursor: pointer;
   padding: 0;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .modal-switch button:hover {
   text-decoration: underline;
+}
+
+/* Tablet - 768px and up */
+@media (min-width: 768px) {
+  .modal-overlay {
+    padding: 24px;
+  }
+
+  .modal-box {
+    padding: 32px;
+    max-width: 400px;
+  }
+
+  .modal-box h2 {
+    margin-bottom: 20px;
+    font-size: 18px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .form-group input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .modal-error {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .modal-submit {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .modal-switch {
+    margin-top: 16px;
+    font-size: 13px;
+  }
+
+  .modal-switch button {
+    font-size: 13px;
+  }
 }

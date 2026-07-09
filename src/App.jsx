@@ -10,6 +10,7 @@ import ProductInformation from './pages/ProductInformation'
 import GenerateBill from './pages/GenerateBill'
 import { DataProvider } from './context/DataContext'
 import './styles/index.css'
+import './App.css'
 
 function App() {
   return (

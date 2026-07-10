@@ -1,137 +1,168 @@
-import { useState, useEffect } from 'react'
-import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { getProduct, createProduct, updateProduct } from '../services/api'
-import FormInput from '../components/FormInput'
-import FormSelect from '../components/FormSelect'
-import '../styles/form.css'
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { getProduct, createProduct, updateProduct } from "../services/api";
+import FormInput from "../components/FormInput";
+import FormSelect from "../components/FormSelect";
+import { toast } from "react-toastify";
+import "../styles/form.css";
 
 const ProductInformation = () => {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [product, setProduct] = useState({
-    id: '',
-    category: 'Oils',
-    brand: '',
-    productType: '',
-    modelName: '',
-    ingredients: '',
-    usedFor: '',
-    unit: '1 Unit',
-    packagingType: '',
-    storageInstruction: '',
-    weight: '',
-    disclaimer: '',
-    manufacturer: '',
-    countryOfOrigin: '',
-    shelfLife: ''
-  })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+    id: "",
+    category: "Oils",
+    brand: "",
+    productType: "",
+    modelName: "",
+    ingredients: "",
+    usedFor: "",
+    unit: "1 Unit",
+    packagingType: "",
+    storageInstruction: "",
+    weight: "",
+    disclaimer: "",
+    manufacturer: "",
+    countryOfOrigin: "",
+    shelfLife: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (location.state?.product) {
-      const passedProduct = location.state.product
+      const passedProduct = location.state.product;
       setProduct({
-        id: passedProduct.id || '',
-        category: passedProduct.category || 'Oils',
-        brand: passedProduct.brand || '',
-        productType: passedProduct.productType || '',
-        modelName: passedProduct.modelName || '',
-        ingredients: passedProduct.ingredients || '',
-        usedFor: passedProduct.usedFor || '',
-        unit: passedProduct.unit || '1 Unit',
-        packagingType: passedProduct.packagingType || '',
-        storageInstruction: passedProduct.storageInstruction || '',
-        weight: passedProduct.weight || '',
-        disclaimer: passedProduct.disclaimer || '',
-        manufacturer: passedProduct.manufacturer || '',
-        countryOfOrigin: passedProduct.countryOfOrigin || '',
-        shelfLife: passedProduct.shelfLife || ''
-      })
+        id: passedProduct.id || "",
+        category: passedProduct.category || "Oils",
+        brand: passedProduct.brand || "",
+        productType: passedProduct.productType || "",
+        modelName: passedProduct.modelName || "",
+        ingredients: passedProduct.ingredients || "",
+        usedFor: passedProduct.usedFor || "",
+        unit: passedProduct.unit || "1 Unit",
+        packagingType: passedProduct.packagingType || "",
+        storageInstruction: passedProduct.storageInstruction || "",
+        weight: passedProduct.weight || "",
+        disclaimer: passedProduct.disclaimer || "",
+        manufacturer: passedProduct.manufacturer || "",
+        countryOfOrigin: passedProduct.countryOfOrigin || "",
+        shelfLife: passedProduct.shelfLife || "",
+      });
     } else if (id) {
       const fetchProduct = async () => {
         try {
-          setLoading(true)
-          const data = await getProduct(id)
+          setLoading(true);
+          const data = await getProduct(id);
           setProduct({
-            id: data.id || '',
-            category: data.category || 'Oils',
-            brand: data.brand || '',
-            productType: data.productType || '',
-            modelName: data.modelName || '',
-            ingredients: data.ingredients || '',
-            usedFor: data.usedFor || '',
-            unit: data.unit || '1 Unit',
-            packagingType: data.packagingType || '',
-            storageInstruction: data.storageInstruction || '',
-            weight: data.weight || '',
-            disclaimer: data.disclaimer || '',
-            manufacturer: data.manufacturer || '',
-            countryOfOrigin: data.countryOfOrigin || '',
-            shelfLife: data.shelfLife || ''
-          })
+            id: data.id || "",
+            category: data.category || "Oils",
+            brand: data.brand || "",
+            productType: data.productType || "",
+            modelName: data.modelName || "",
+            ingredients: data.ingredients || "",
+            usedFor: data.usedFor || "",
+            unit: data.unit || "1 Unit",
+            packagingType: data.packagingType || "",
+            storageInstruction: data.storageInstruction || "",
+            weight: data.weight || "",
+            disclaimer: data.disclaimer || "",
+            manufacturer: data.manufacturer || "",
+            countryOfOrigin: data.countryOfOrigin || "",
+            shelfLife: data.shelfLife || "",
+          });
         } catch (err) {
-          setError(err.message)
+          setError(err.message);
         } finally {
-          setLoading(false)
+          setLoading(false);
         }
-      }
-      fetchProduct()
+      };
+      fetchProduct();
     }
-  }, [id, location.state])
+  }, [id, location.state]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setProduct(prev => ({ ...prev, [name]: value }))
-  }
-
+    const { name, value } = e.target;
+    setProduct((prev) => ({ ...prev, [name]: value }));
+  };
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    setError(null);
+
     try {
-      setLoading(true)
+      setLoading(true);
+
+      const existingProducts = await getProducts();
+
+      const productId = id
+        ? location.state?.product?.productId
+        : generateProductId(product.category, existingProducts);
+
+      const payload = {
+        ...product,
+        productId,
+        sellingPrice: Number(product.sellingPrice) || 0,
+        originalPrice: product.originalPrice
+          ? Number(product.originalPrice)
+          : undefined,
+        stockQuantity: product.stockQuantity
+          ? Number(product.stockQuantity)
+          : 0,
+      };
+
       if (id) {
-        await updateProduct(id, product)
+        await updateProduct(id, payload);
+        toast.success("✅ Product updated successfully!");
       } else {
-        await createProduct(product)
+        await createProduct(payload);
+        toast.success("✅ Product added successfully!");
       }
-      navigate('/products')
+
+      setTimeout(() => {
+        navigate("/products");
+      }, 1200);
     } catch (err) {
-      setError(err.message)
+      console.error(err);
+      setError(err.message);
+
+      toast.error(err.message || "❌ Failed to save product.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
+  };
   const handleReset = () => {
-    setProduct({
-      id: '',
-      category: 'Oils',
-      brand: '',
-      productType: '',
-      modelName: '',
-      ingredients: '',
-      usedFor: '',
-      unit: '1 Unit',
-      packagingType: '',
-      storageInstruction: '',
-      weight: '',
-      disclaimer: '',
-      manufacturer: '',
-      countryOfOrigin: '',
-      shelfLife: ''
-    })
-  }
+    setProduct(emptyProduct);
+    toast.info("🔄 Form reset successfully.");
+  };
 
-  const categories = ['Oils', 'Grains', 'Dairy', 'Vegetables', 'Meat', 'Beverages', 'Snacks']
-  const units = ['1 Unit', '1 kg', '500 g', '250 g', '1 L', '500 ml', '100 ml']
-  const packagingTypes = ['Plastic Bottle / Pouch', 'Glass Jar', 'Paper Box', 'Can', 'Bag']
+  const categories = [
+    "Oils",
+    "Grains",
+    "Dairy",
+    "Vegetables",
+    "Meat",
+    "Beverages",
+    "Snacks",
+  ];
+  const units = ["1 Unit", "1 kg", "500 g", "250 g", "1 L", "500 ml", "100 ml"];
+  const packagingTypes = [
+    "Plastic Bottle / Pouch",
+    "Glass Jar",
+    "Paper Box",
+    "Can",
+    "Bag",
+  ];
 
   return (
     <div className="form-page">
       <div className="page-header">
-        <h1 className="page-title">{id ? 'Edit Product — Information' : 'Add Product — Information'}</h1>
-        <p className="page-subtitle">Category-driven highlights, packaging and regulatory details.</p>
+        <h1 className="page-title">
+          {id ? "Edit Product — Information" : "Add Product — Information"}
+        </h1>
+        <p className="page-subtitle">
+          Category-driven highlights, packaging and regulatory details.
+        </p>
       </div>
 
       {error && <div className="alert alert-danger">{error}</div>}
@@ -152,7 +183,11 @@ const ProductInformation = () => {
                     placeholder="Type ID and press Enter to load"
                     required
                   />
-                  {id && <button type="button" className="btn btn-outline btn-sm">Load product</button>}
+                  {id && (
+                    <button type="button" className="btn btn-outline btn-sm">
+                      Load product
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="form-group">
@@ -161,7 +196,10 @@ const ProductInformation = () => {
                   name="category"
                   value={product.category}
                   onChange={handleChange}
-                  options={categories.map(cat => ({ value: cat, label: cat }))}
+                  options={categories.map((cat) => ({
+                    value: cat,
+                    label: cat,
+                  }))}
                   required
                 />
               </div>
@@ -236,7 +274,7 @@ const ProductInformation = () => {
                   name="unit"
                   value={product.unit}
                   onChange={handleChange}
-                  options={units.map(unit => ({ value: unit, label: unit }))}
+                  options={units.map((unit) => ({ value: unit, label: unit }))}
                 />
               </div>
               <div className="form-group">
@@ -245,7 +283,10 @@ const ProductInformation = () => {
                   name="packagingType"
                   value={product.packagingType}
                   onChange={handleChange}
-                  options={packagingTypes.map(pkg => ({ value: pkg, label: pkg }))}
+                  options={packagingTypes.map((pkg) => ({
+                    value: pkg,
+                    label: pkg,
+                  }))}
                 />
               </div>
               <div className="form-group">
@@ -291,7 +332,9 @@ const ProductInformation = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label className="form-label">MANUFACTURER / MARKETER NAME</label>
+                <label className="form-label">
+                  MANUFACTURER / MARKETER NAME
+                </label>
                 <input
                   type="text"
                   name="manufacturer"
@@ -328,16 +371,21 @@ const ProductInformation = () => {
         </div>
 
         <div className="form-actions">
-          <button type="button" className="btn btn-outline" onClick={handleReset} disabled={loading}>
+          <button
+            type="button"
+            className="btn btn-outline"
+            onClick={handleReset}
+            disabled={loading}
+          >
             Reset to category defaults
           </button>
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Saving...' : 'Save Product Information'}
+            {loading ? "Saving..." : "Save Product Information"}
           </button>
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default ProductInformation
+export default ProductInformation;

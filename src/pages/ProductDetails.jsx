@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getProducts, createProduct, updateProduct } from "../services/api";
 import { generateProductId } from "../utils/productId";
@@ -101,15 +102,15 @@ const ProductDetails = () => {
     try {
       setLoading(true);
 
-      // Get all existing products
       const existingProducts = await getProducts();
 
-      // Generate product ID
-      const productId = generateProductId(product.category, existingProducts);
+      const productId = id
+        ? location.state?.product?.productId
+        : generateProductId(product.category, existingProducts);
 
       const payload = {
         ...product,
-        productId, // SEND TO BACKEND
+        productId,
         sellingPrice: Number(product.sellingPrice) || 0,
         originalPrice: product.originalPrice
           ? Number(product.originalPrice)
@@ -121,13 +122,21 @@ const ProductDetails = () => {
 
       if (id) {
         await updateProduct(id, payload);
+
+        toast.success("Product updated successfully!");
       } else {
         await createProduct(payload);
+
+        toast.success("Product created successfully!");
       }
 
       navigate("/products");
     } catch (err) {
+      console.error(err);
+
       setError(err.message);
+
+      toast.error(err.message || "Failed to save product.");
     } finally {
       setLoading(false);
     }

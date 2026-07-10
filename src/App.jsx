@@ -11,6 +11,8 @@ import GenerateBill from './pages/GenerateBill'
 import { DataProvider } from './context/DataContext'
 import './styles/index.css'
 import './App.css'
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
@@ -33,9 +35,19 @@ function App() {
                 <Route path="/bills" element={<GenerateBill />} />
               </Routes>
             </div>
+
           </div>
         </div>
       </Router>
+         <ToastContainer
+    position="top-right"
+    autoClose={2500}
+    hideProgressBar={false}
+    newestOnTop
+    closeOnClick
+    pauseOnHover
+    theme="colored"
+  />
     </DataProvider>
   )
 }

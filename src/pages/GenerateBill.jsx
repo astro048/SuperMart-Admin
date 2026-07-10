@@ -94,85 +94,90 @@ const GenerateBill = () => {
   }, [id, location.state]);
 
   // Load user data with detailed console logs
-useEffect(() => {
-  if (selectedUser) {
-    // Find user by BOTH userId and id fields
-    const user = users.find(u =>
-      String(u.userId) === String(selectedUser) ||
-      String(u.id) === String(selectedUser)
-    );
-
-    if (user) {
-      // 🔥 CONSOLE LOG: Fetched User Data
-      console.log('👤 Fetched User Data:', {
-        userId: user.userId || user.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        status: user.status,
-        joined: user.joined || user.createdAt
-      });
-
-      // Get orders matching this user's ID
-      const userOrders = (orders || []).filter(order =>
-        String(order.userId) === String(user.userId || user.id)
+  useEffect(() => {
+    if (selectedUser) {
+      // Find user by BOTH userId and id fields
+      const user = users.find(
+        (u) =>
+          String(u.userId) === String(selectedUser) ||
+          String(u.id) === String(selectedUser),
       );
 
-      // 🔥 CONSOLE LOG: All Orders for this User
-      console.log('📦 All Orders for this User:', userOrders);
-
-      let loadedItems = [];
-
-      if (userOrders.length > 0) {
-        // Get most recent order
-        const latestOrder = [...userOrders].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[0];
-
-        // 🔥 CONSOLE LOG: Latest Order
-        console.log('📄 Latest Order:', {
-          orderId: latestOrder.orderId || latestOrder._id,
-          userId: latestOrder.userId,
-          items: latestOrder.items,
-          totalAmount: latestOrder.totalAmount,
-          createdAt: latestOrder.createdAt
+      if (user) {
+        // 🔥 CONSOLE LOG: Fetched User Data
+        console.log("👤 Fetched User Data:", {
+          userId: user.userId || user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          status: user.status,
+          joined: user.joined || user.createdAt,
         });
 
-        // Map to bill items format
-        loadedItems = (latestOrder.items || []).map((item, idx) => ({
-          id: Date.now() + idx,
-          name: item.name,
-          quantity: item.qty || 1,
-          price: Number(item.price) || 0,
-          vat: bill.vatPercentage || 18
+        // Get orders matching this user's ID
+        const userOrders = (orders || []).filter(
+          (order) => String(order.userId) === String(user.userId || user.id),
+        );
+
+        // 🔥 CONSOLE LOG: All Orders for this User
+        console.log("📦 All Orders for this User:", userOrders);
+
+        let loadedItems = [];
+
+        if (userOrders.length > 0) {
+          // Get most recent order
+          const latestOrder = [...userOrders].sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+          )[0];
+
+          // 🔥 CONSOLE LOG: Latest Order
+          console.log("📄 Latest Order:", {
+            orderId: latestOrder.orderId || latestOrder._id,
+            userId: latestOrder.userId,
+            items: latestOrder.items,
+            totalAmount: latestOrder.totalAmount,
+            createdAt: latestOrder.createdAt,
+          });
+
+          // Map to bill items format
+          loadedItems = (latestOrder.items || []).map((item, idx) => ({
+            id: Date.now() + idx,
+            name: item.name,
+            quantity: item.qty || 1,
+            price: Number(item.price) || 0,
+            vat: bill.vatPercentage || 18,
+          }));
+
+          // 🔥 CONSOLE LOG: Loaded Items
+          console.log("🛒 Loaded Bill Items:", loadedItems);
+        } else {
+          console.log("⚠️ No orders found for user ID:", user.userId || user.id);
+        }
+
+        // Update bill state
+        setBill((prev) => ({
+          ...prev,
+          customerName: user.name || "",
+          customerPhone: user.phone || user.email || "",
+          items: loadedItems,
         }));
 
-        // 🔥 CONSOLE LOG: Loaded Items
-        console.log('🛒 Loaded Bill Items:', loadedItems);
+        // 🔥 CONSOLE LOG: Customer Info Loaded
+        console.log("📋 Customer Information Loaded:", {
+          customerName: user.name,
+          customerPhone: user.phone || user.email,
+          itemsCount: loadedItems.length,
+        });
       } else {
-        console.log('⚠️ No orders found for user ID:', user.userId || user.id);
+        console.log(
+          "❌ User not found with ID:",
+          selectedUser,
+          "Available users:",
+          users.map((u) => u.userId || u.id),
+        );
       }
-
-      // Update bill state
-      setBill(prev => ({
-        ...prev,
-        customerName: user.name || '',
-        customerPhone: user.phone || user.email || '',
-        items: loadedItems
-      }));
-
-      // 🔥 CONSOLE LOG: Customer Info Loaded
-      console.log('📋 Customer Information Loaded:', {
-        customerName: user.name,
-        customerPhone: user.phone || user.email,
-        itemsCount: loadedItems.length
-      });
-
-    } else {
-      console.log('❌ User not found with ID:', selectedUser, 'Available users:', users.map(u => u.userId || u.id));
     }
-  }
-}, [selectedUser, users, orders]);
+  }, [selectedUser, users, orders]);
 
   // Calculate totals with console logs
   useEffect(() => {
@@ -260,6 +265,27 @@ useEffect(() => {
       }));
       setEditingItem(null);
     }
+  };
+
+  // Resolve a product's price across possible field-name variants used in the data source
+  const getProductPrice = (product) => {
+    if (!product) return undefined;
+    const candidate =
+      product.price ?? product.sellingPrice ?? product.rate ?? product.mrp;
+    return candidate != null ? Number(candidate) : undefined;
+  };
+
+  // Fired when a product is chosen from the dropdown — auto-fills the price immediately
+  const handleProductSelect = (e) => {
+    const selectedName = e.target.value;
+    const product = products.find((p) => p.name === selectedName);
+    const productPrice = getProductPrice(product);
+
+    setNewItem((prev) => ({
+      ...prev,
+      name: selectedName,
+      price: product ? (productPrice ?? 0) : prev.price,
+    }));
   };
 
   // Excel Download
@@ -519,16 +545,6 @@ useEffect(() => {
     setEditMode(false);
   };
 
-  const addFromProducts = (product) => {
-    if (product) {
-      setNewItem((prev) => ({
-        ...prev,
-        name: product.name,
-        price: product.price || 0,
-      }));
-    }
-  };
-
   if (loading) return <div className="card">Loading...</div>;
 
   const showShopSection = sectionView === "shop";
@@ -720,8 +736,7 @@ useEffect(() => {
                             key={user.userId || user.id}
                             value={user.userId || user.id}
                           >
-                            {user.name} ({user.email}) - ID:{" "}
-                            {user.userId || user.id}
+                            {user.name}
                           </option>
                         ))}
                       </select>
@@ -759,36 +774,24 @@ useEffect(() => {
                   <div className="form-row">
                     <div className="form-group">
                       <label className="form-label">Product Name</label>
-                      <div style={{ display: "flex", gap: "8px" }}>
-                        <select
-                          value={newItem.name}
-                          onChange={(e) =>
-                            setNewItem((prev) => ({
-                              ...prev,
-                              name: e.target.value,
-                            }))
-                          }
-                          className="form-select"
-                          style={{ flex: 1 }}
-                        >
-                          <option value="">Select from products</option>
-                          {products.map((product) => (
+                      <select
+                        value={newItem.name}
+                        onChange={handleProductSelect}
+                        className="form-select"
+                      >
+                        <option value="">Select from products</option>
+                        {products.map((product) => {
+                          const productPrice = getProductPrice(product);
+                          return (
                             <option key={product.id} value={product.name}>
-                              {product.name} (₹{product.price})
+                              {product.name}
+                              {productPrice != null
+                                ? ` (₹${productPrice})`
+                                : ""}
                             </option>
-                          ))}
-                        </select>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() =>
-                            addFromProducts(
-                              products.find((p) => p.name === newItem.name),
-                            )
-                          }
-                        >
-                          Load
-                        </button>
-                      </div>
+                          );
+                        })}
+                      </select>
                     </div>
                     <div className="form-group">
                       <label className="form-label">Quantity</label>

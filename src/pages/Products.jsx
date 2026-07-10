@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useData } from "../context/DataContext";
 import { deleteProduct } from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import "../styles/products.css";
 import "../styles/index.css";
 
@@ -39,24 +40,80 @@ const EditModal = ({ product, onClose, onEditDetails, onEditInfo }) => {
   );
 };
 
+// Delete Confirmation Modal Component
+const DeleteConfirmModal = ({ product, onClose, onConfirm }) => {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <h3 style={{ marginBottom: "16px", color: "var(--text-primary)" }}>
+          Delete Product
+        </h3>
+        <p style={{ marginBottom: "20px", color: "var(--text-secondary)" }}>
+          Are you sure you want to delete{" "}
+          <strong>{product?.name || "this product"}</strong>? This action
+          cannot be undone.
+        </p>
+        <div
+          style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}
+        >
+          <button
+            className="btn-1"
+            onClick={onClose}
+            style={{ padding: "10px 20px" }}
+          >
+            Cancel
+          </button>
+          <button
+            className="btn btn-danger"
+            onClick={onConfirm}
+            style={{ padding: "10px 20px" }}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Products = () => {
   const { products, loading, refetch } = useData();
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
   const navigate = useNavigate();
 
-  const handleDeleteProduct = async (productId, e) => {
+  const handleDeleteClick = (product, e) => {
     e.stopPropagation();
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        await deleteProduct(productId);
-        refetch();
-      } catch (error) {
-        console.error("Failed to delete product:", error);
-      }
+    setProductToDelete(product);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+
+    try {
+      await deleteProduct(productToDelete._id);
+
+      toast.success("Product deleted successfully!");
+
+      await refetch();
+    } catch (error) {
+      console.error("Failed to delete product:", error);
+
+      toast.error("Failed to delete product!");
+    } finally {
+      setShowDeleteModal(false);
+      setProductToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setProductToDelete(null);
   };
 
   const handleEditClick = (product, e) => {
@@ -134,46 +191,6 @@ const Products = () => {
         </div>
 
         <div className="products-grid">
-          {/* {filteredProducts.map((product) => (
-            <div key={product.id} className="product-card">
-              <div className="product-image">
-                <img 
-                  src={product.image || 'https://via.placeholder.com/200x200?text=No+Image'}
-                  alt={product.name}
-                />
-              </div>
-              <div className="product-info">
-                <h3 className="product-name">{product.name}</h3>
-                <p className="product-description">{product.description}</p>
-                <div className="product-footer">
-                  <span className="product-price">₹{product.sellingPrice || product.price}</span>
-                  <span className="product-id">{product.id}</span>
-                </div>
-              </div>
-              <div className="product-actions">
-                <button 
-                  className="icon-btn edit-btn"
-                  onClick={(e) => handleEditClick(product, e)}
-                  title="Edit"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                </button>
-                <button 
-                  className="icon-btn delete-btn"
-                  onClick={(e) => handleDeleteProduct(product.id, e)}
-                  title="Delete"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          ))} */}
           {filteredProducts.map((product) => (
             <div key={product._id} className="product-card">
               <div className="product-image">
@@ -218,7 +235,7 @@ const Products = () => {
                 </button>
                 <button
                   className="icon-btn delete-btn"
-                  onClick={(e) => handleDeleteProduct(product._id, e)}
+                  onClick={(e) => handleDeleteClick(product, e)}
                   title="Delete"
                 >
                   <svg
@@ -249,6 +266,15 @@ const Products = () => {
           onClose={() => setShowEditModal(false)}
           onEditDetails={handleEditDetails}
           onEditInfo={handleEditInfo}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && productToDelete && (
+        <DeleteConfirmModal
+          product={productToDelete}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
         />
       )}
     </div>

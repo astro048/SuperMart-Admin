@@ -4,6 +4,8 @@ import { deleteProduct } from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "../styles/products.css";
+
+import "../styles/Products.css";
 import "../styles/index.css";
 
 // Edit Modal Component

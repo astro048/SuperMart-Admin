@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import '../styles/products.css'
+import '../styles/Products.css'
 
 const ProductCard = ({ product, onDelete }) => {
   return (

@@ -1,6 +1,6 @@
 import { useData } from '../context/DataContext'
 import StatsCard from '../components/StatsCard'
-import '../styles/dashboard.css'
+import '../styles/Dashboard.css'
 
 const Dashboard = () => {
   const { users, orders, products, loading } = useData()

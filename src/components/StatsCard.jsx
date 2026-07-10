@@ -1,4 +1,4 @@
-import '../styles/dashboard.css'
+import '../styles/Dashboard.css'
 
 const StatsCard = ({ title, value, change, icon, color }) => {
   return (
